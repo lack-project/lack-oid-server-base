@@ -1,0 +1,35 @@
+{
+  "name": "lack/oid-server-base",
+  "description": "OpenID Connect Server",
+  "license": "MIT",
+  "homepage": "https://infracamp.org/project/phore",
+  "authors": [
+    { "name": "Matthias Leuffen", "email": "m@tth.es" },
+    { "name": "Michael Schaar"}
+  ],
+  "repositories": [
+  ],
+  "require": {
+    "php": ">=8.0",
+    "ext-json": "*",
+    "ext-openssl": "*",
+    "brace/core": "*"
+  },
+  "require-dev": {
+    "phore/tester": "*"
+  },
+  "suggest": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Lack\\OidServer\\Base\\": "src/"
+    },
+    "files": [
+      "src/functions.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": { "Phore\\Tests\\": "tests/" }
+  },
+  "minimum-stability": "dev"
+}
