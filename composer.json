@@ -13,7 +13,11 @@
     "php": ">=8.0",
     "ext-json": "*",
     "ext-openssl": "*",
-    "brace/core": "*"
+    "brace/core": "*",
+    "brace/mod-session": "*",
+    "brace/mod-body": "*",
+    "brace/mod-router": "*",
+    "brace/mod-request-laminas": "*"
   },
   "require-dev": {
     "phore/tester": "*"
