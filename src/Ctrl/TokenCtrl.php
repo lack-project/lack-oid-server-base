@@ -23,7 +23,10 @@ class TokenCtrl
     {
         $authReq = $tokenManager->getByCode($body->code);
 
-        $authReq->client_id
+        return [
+            "token" => $authReq->client_id
+        ];
+
     }
 
 }
