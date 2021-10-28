@@ -14,13 +14,13 @@ interface UserReadMangerInterface
      * @return ResourceOwnerInterface
      * @throws NotFoundException
      */
-    public function getResourceOwnerByUid(string $uid) : UserInterface;
+    public function getUserByUid(string $uid) : UserInterface;
 
     /**
      * @param string $uidOrEMail
      * @return ResourceOwnerInterface
      * @throws NotFoundException
      */
-    public function findResourceOwner(string $uidOrEMail) : UserInterface;
+    public function findUser(string $uidOrEMail) : UserInterface;
 
 }
