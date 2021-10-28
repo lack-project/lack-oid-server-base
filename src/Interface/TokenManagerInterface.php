@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Lack\OidServer\Base\Manager;
+namespace Lack\OidServer\Base\Interface;
 
 
 use Lack\OidServer\Base\Type\T_Q_Authorize;

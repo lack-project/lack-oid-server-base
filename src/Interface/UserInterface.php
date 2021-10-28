@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Lack\OidServer\Base\Manager;
+namespace Lack\OidServer\Base\Interface;
 
 
-interface ResourceOwnerInterface
+interface UserInterface
 {
 
     public function getUid() : string;

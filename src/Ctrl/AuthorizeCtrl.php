@@ -14,7 +14,7 @@ class AuthorizeCtrl
 {
 
 
-    public function __invoke(OidApp $app, T_Q_Authorize $query, Session $session, TokenManagerInterface $tokenManager)
+    public function __invoke(OidApp $app, T_Q_Authorize $query, Session $session)
     {
         if ( ! $session->has(OidApp::SESS_KEY_LOGIN_UID)) {
             $session->set(OidApp::SESS_KEY_LAST_AUTH_REQ, (array)$query);

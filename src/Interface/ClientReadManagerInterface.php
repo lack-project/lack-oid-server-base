@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Lack\OidServer\Base\Manager;
+namespace Lack\OidServer\Base\Interface;
 
 
 interface ClientReadManagerInterface

@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Lack\OidServer\Base\Manager;
+namespace Lack\OidServer\Base\Interface;
 
 
 use Phore\Core\Exception\NotFoundException;
 
-interface ResourceOwnerReadMangerInterface
+interface UserReadMangerInterface
 {
 
     /**
@@ -14,13 +14,13 @@ interface ResourceOwnerReadMangerInterface
      * @return ResourceOwnerInterface
      * @throws NotFoundException
      */
-    public function getResourceOwnerById(string $uid) : ResourceOwnerInterface;
+    public function getResourceOwnerByUid(string $uid) : UserInterface;
 
     /**
      * @param string $uidOrEMail
      * @return ResourceOwnerInterface
      * @throws NotFoundException
      */
-    public function findResourceOwner(string $uidOrEMail) : ResourceOwnerInterface;
+    public function findResourceOwner(string $uidOrEMail) : UserInterface;
 
 }
