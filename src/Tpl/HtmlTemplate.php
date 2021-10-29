@@ -65,8 +65,9 @@ class HtmlTemplate
     }
 
 
-    protected function parseTemplate(string $templateFile, array $templateData)
+    protected function parseTemplate(string $templateFile, array ...$templateData)
     {
+        $templateData = array_merge(...$templateData);
         if ( ! in_array(pathinfo($templateFile, PATHINFO_EXTENSION), ["html", "htm"]))
             throw new \InvalidArgumentException("Template file requires extension to be '.html' or '.htm'");
         if ( ! file_exists($templateFile))

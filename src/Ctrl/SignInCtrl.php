@@ -26,7 +26,11 @@ class SignInCtrl
     {
 
         if ($request->getMethod() === "GET") {
-            return $this->tpl->render($app, []);
+            return $this->tpl->render($app, [
+                "msg" => $request->getQueryParams()["msg"] ?? null,
+                "ok_msg" => $request->getQueryParams()["ok_msg"] ?? null,
+                "user" => $request->getQueryParams()["user"] ?? "",
+            ]);
         }
 
         // Wait some time so rate limit can apply to password brute force attacks
@@ -36,21 +40,22 @@ class SignInCtrl
         $password = $request->getParsedBody()["passwd"] ?? "";
 
         if ($uidOrEmail === "")
-            return $app->redirect("", ["error" => "No user sprecified"]);
+            return $app->redirect("", ["msg" => "No user sprecified"]);
         if ($password === "")
-            return $app->redirect("", ["error"=>"please specify password"]);
+            return $app->redirect("", ["msg"=>"please specify password", "user" => $uidOrEmail]);
 
         try {
             $user = $app->get("userReadManager", UserReadMangerInterface::class)->findUser($uidOrEmail);
             if ( ! $user->isValidSecret($password)) {
-                return $app->redirect("", ["error"=>"Invalid password"]);
+                return $app->redirect("", ["msg"=>"Invalid password", "user" => $uidOrEmail]);
             }
             $session->set(OidApp::SESS_KEY_LOGIN_UID, $user->getUid());
             $authRequest = $session->get(OidApp::SESS_KEY_LAST_AUTH_REQ);
+
             $session->remove(OidApp::SESS_KEY_LAST_AUTH_REQ);
-            return $app->redirect("/signin");
+            return $app->redirect("/authorize", $authRequest);
         } catch (NotFoundException $e) {
-            return $app->redirect("", ["error" => "Invalid user/password"]);
+            return $app->redirect("", ["msg" => "Invalid user/password", "user" => $uidOrEmail]);
         }
 
 
