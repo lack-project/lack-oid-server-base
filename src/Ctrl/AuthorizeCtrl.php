@@ -24,7 +24,7 @@ class AuthorizeCtrl
 
             if ( ! $session->has(OidApp::SESS_KEY_LOGIN_UID)) {
                 if ($query->prompt === "none")
-                    throw new \Exception("Cannot handle authentication response");
+                    throw new \InvalidArgumentException("Cannot handle authentication response");
                 $session->set(OidApp::SESS_KEY_LAST_AUTH_REQ, (array)$query);
                 return $app->redirect("/signin");
             }
@@ -41,7 +41,7 @@ class AuthorizeCtrl
                 "code" => $code
             ]);
             return $response->withAddedHeader("X-Frame-Options", "allow-from " . $app->request->getHeaderLine("Origin"));
-        } catch (\Exception $e) {
+        } catch (\InvalidArgumentException $e) {
             return $app->redirect($query->redirect_uri, ["error" => $e->getMessage(), "error_code" => $e->getCode()]);
         }
 
