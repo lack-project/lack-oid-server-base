@@ -7,6 +7,6 @@ namespace Lack\OidServer\Base\Interface;
 interface ClaimManagerInterface
 {
 
-    public function getScopes(ClientInterface $client, ResourceOwnerInterface $resourceOwner = null, array $scopes = []) : array;
+    public function getScopes(ClientInterface $client, UserInterface $user = null, array $scopes = []) : array;
 
 }
