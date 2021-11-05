@@ -18,6 +18,9 @@ class TokenCtrl
 {
 
 
+    private function buildToken()
+
+
     /**
      *
      *
@@ -31,42 +34,49 @@ class TokenCtrl
 
         sleep(1);
 
+        $user = null;
+        $scopes = [];
 
         if ($body->grant_type === "authorization_code" && $body->code_verifier !== null) {
             $flow = new AuthorizationCodePKCE();
             $origAuthReq = $tokenManager->getByCode($body->code);
-
-            $flow->validate($app, $body, $origAuthReq);
-
-            $claimManager = $app->get("claimsManager", ClaimManagerInterface::class);
-            $jwtBuilder = $app->get("jwtBuilder", JwtBuilderInterface::class);
-            $clientManager = $app->get("clientReadManager", ClientReadManagerInterface::class);
-            $userManager = $app->get("userReadManager", UserReadMangerInterface::class);
-
             $loginUid = $app->get("session", Session::class)->get(OidApp::SESS_KEY_LOGIN_UID);
+            $userManager = $app->get("userReadManager", UserReadMangerInterface::class);
             $user = $userManager->getUserByUid($loginUid);
-
-            $token = $jwtBuilder->buildJwtToken(
-                $claimManager->getScopes(
-                    $clientManager->getClientById($origAuthReq->client_id),
-                    $user,
-                    explode(" ", $origAuthReq->scope)
-                )
-            );
-
-            return [
-                "access_token" => $token,
-                "expires_in" => $jwtBuilder->getExpiresIn()
-            ];
-
+            $client = $app->get("clientReadManager", ClientReadManagerInterface::class)->getClientById($body->client_id);
+            $scopes = explode(" ", $origAuthReq->scope);
+            $flow->validate($app, $body, $origAuthReq);
         } else {
-
+            throw new \InvalidArgumentException("Invalid flow. cannot handle grant_type without code_verifier.");
         }
 
-        return [
-            "token" => $authReq->client_id
-        ];
 
+        $claimManager = $app->get("claimManager", ClaimManagerInterface::class);
+        $jwtBuilder = $app->get("jwtBuilder", JwtBuilderInterface::class);
+
+        $claimManager->validateScopes($user, $client, $scopes);
+
+        $idToken = $jwtBuilder->buildJwtToken(
+            $claimManager->getIdClaims(
+                $clientManager->getClientById($origAuthReq->client_id),
+                $user,
+                $scopes
+            )
+        );
+        $accessToken = $jwtBuilder->buildJwtToken(
+            $claimManager->getAccessClaims(
+                $clientManager->getClientById($origAuthReq->client_id),
+                $user,
+                $scopes
+            )
+        );
+
+        return [
+            "access_token" => $accessToken,
+            "id_token" => $idToken,
+            "expires_in" => $jwtBuilder->getExpiresIn(),
+            "token_type" => "Bearer"
+        ];
     }
 
 }

@@ -6,6 +6,7 @@ namespace Lack\OidServer\Base\Ctrl;
 
 use Brace\Session\Session;
 use Brace\Session\SessionMiddleware;
+use Lack\OidServer\Base\Interface\ClaimManagerInterface;
 use Lack\OidServer\Base\Interface\TokenManagerInterface;
 use Lack\OidServer\Base\Interface\UserReadMangerInterface;
 use Lack\OidServer\Base\OidApp;
@@ -21,6 +22,10 @@ class AuthorizeCtrl
             $client = $app->clientReadManager->getClientById($query->client_id);
             if ( ! $client->isValidRedirectTarget($query->redirect_uri))
                 throw new \InvalidArgumentException("redirect_uri '{$query->redirect_uri}' is not allowed for client '{$query->client_id}'");
+
+            $app->get("claimManager", ClaimManagerInterface::class)->validateScopes(
+                $client, null, explode(" ", $query->scope)
+            );
 
             if ( ! $session->has(OidApp::SESS_KEY_LOGIN_UID)) {
                 if ($query->prompt === "none")
