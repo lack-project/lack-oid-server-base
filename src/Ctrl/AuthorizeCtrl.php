@@ -27,10 +27,11 @@ class AuthorizeCtrl
                 $client, null, explode(" ", $query->scope)
             );
 
+            $session->set(OidApp::SESS_KEY_LAST_AUTH_REQ, (array)$query);
+
             if ( ! $session->has(OidApp::SESS_KEY_LOGIN_UID)) {
                 if ($query->prompt === "none")
                     throw new \InvalidArgumentException("Cannot handle authentication response");
-                $session->set(OidApp::SESS_KEY_LAST_AUTH_REQ, (array)$query);
                 return $app->redirect("/signin");
             }
 

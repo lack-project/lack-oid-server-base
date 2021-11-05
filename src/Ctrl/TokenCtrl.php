@@ -12,13 +12,12 @@ use Lack\OidServer\Base\Interface\JwtBuilderInterface;
 use Lack\OidServer\Base\Interface\TokenManagerInterface;
 use Lack\OidServer\Base\Interface\UserReadMangerInterface;
 use Lack\OidServer\Base\OidApp;
+use Lack\OidServer\Base\Type\T_Q_Authorize;
 use Lack\OidServer\Base\Type\T_Q_Token;
 
 class TokenCtrl
 {
 
-
-    private function buildToken()
 
 
     /**
@@ -39,7 +38,13 @@ class TokenCtrl
 
         if ($body->grant_type === "authorization_code" && $body->code_verifier !== null) {
             $flow = new AuthorizationCodePKCE();
-            $origAuthReq = $tokenManager->getByCode($body->code);
+
+            $session = $app->get("session", Session::class);
+            $origAuthReq = $session->get(OidApp::SESS_KEY_LAST_AUTH_REQ);
+            if ($origAuthReq === null)
+                throw new \InvalidArgumentException("No authorize request pending.");
+            $origAuthReq = phore_hydrate($origAuthReq, T_Q_Authorize::class);
+
             $loginUid = $app->get("session", Session::class)->get(OidApp::SESS_KEY_LOGIN_UID);
             $userManager = $app->get("userReadManager", UserReadMangerInterface::class);
             $user = $userManager->getUserByUid($loginUid);
@@ -54,18 +59,18 @@ class TokenCtrl
         $claimManager = $app->get("claimManager", ClaimManagerInterface::class);
         $jwtBuilder = $app->get("jwtBuilder", JwtBuilderInterface::class);
 
-        $claimManager->validateScopes($user, $client, $scopes);
+        $claimManager->validateScopes($client, $user, $scopes);
 
         $idToken = $jwtBuilder->buildJwtToken(
             $claimManager->getIdClaims(
-                $clientManager->getClientById($origAuthReq->client_id),
+                $client,
                 $user,
                 $scopes
             )
         );
         $accessToken = $jwtBuilder->buildJwtToken(
             $claimManager->getAccessClaims(
-                $clientManager->getClientById($origAuthReq->client_id),
+                $client,
                 $user,
                 $scopes
             )
@@ -75,7 +80,9 @@ class TokenCtrl
             "access_token" => $accessToken,
             "id_token" => $idToken,
             "expires_in" => $jwtBuilder->getExpiresIn(),
-            "token_type" => "Bearer"
+            "token_type" => "Bearer",
+            "server_ts" => time(),
+            "server_gmdate" => gmdate('D, d M Y H:i:s T')
         ];
     }
 

@@ -18,7 +18,7 @@ interface ClaimManagerInterface
      * @throws \InvalidArgumentException
      * @return bool
      */
-    public function validateScopes(ClientInterface $client, UserInterface $user = null, array $scopes = []) : bool;
+    public function validateScopes(ClientInterface $client, UserInterface $user = null, array $scopes = []) : void;
 
     /**
      * Return an array of claims for the id token according to the scopes provided in parameter 3
@@ -39,7 +39,7 @@ interface ClaimManagerInterface
      *  'name'      => (string) (profile)
      *  'given_name'=> (string) (profile)
      *  'family_name'=> (string) (profile)
-     *  'nicname'    => (string)
+     *  'nickname'    => (string)
      *  'picture'   => (string) (profile)
      *  'updated_at'=> (int) Unix timestamp (profile)
      *  'email'     => (string) Email (email)
